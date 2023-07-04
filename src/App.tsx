@@ -7,10 +7,12 @@ export default function App() {
   const [lastName, setLast] = useState("");
 
   const AddFullName = () => {
-    const fullName = `${firstName} ${lastName}`;
-    setNames([...names, fullName]);
-    setName("");
-    setLast("");
+    if (firstName && lastName) {
+      const fullName = `${firstName} ${lastName}`;
+      setNames([...names, fullName]);
+      setName("");
+      setLast("");
+    } else alert(" Faltan campos por llenar ");
   };
 
   const HandleFirst = (e) => {
@@ -37,17 +39,20 @@ export default function App() {
             placeholder="Type first name"
             value={firstName}
             onChange={HandleFirst}
-            className=" bg-slate-700 rounded-md text-white"></input>
+            className=" bg-slate-700 rounded-md text-white"
+          ></input>
           <input
             type="text"
             placeholder="Type last name"
             onChange={HandleLast}
             value={lastName}
-            className=" bg-slate-700 rounded-md text-white"></input>
+            className=" bg-slate-700 rounded-md text-white"
+          ></input>
           <button
             type="submit"
             onClick={AddFullName}
-            className="flex flex-col bg-slate-700 text-center font-medium text-white ps-4">
+            className="flex flex-col bg-slate-700 text-center font-medium text-white ps-4"
+          >
             ➕Agregar Koder➕
           </button>
         </section>
