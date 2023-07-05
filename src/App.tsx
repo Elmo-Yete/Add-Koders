@@ -1,31 +1,33 @@
 import { useState } from "react";
 import KoderCard from "./components/KoderCard";
+import { Koder } from "./types/common.types";
+import { useForm } from "react-hook-form";
+import clsx from "clsx";
 
 export default function App() {
-  const [names, setNames] = useState<string[]>([]);
-  const [firstName, setName] = useState("");
-  const [lastName, setLast] = useState("");
+  const [names, setNames] = useState<Koder[]>([]);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<Koder>();
 
-  const AddFullName = () => {
-    if (firstName && lastName) {
-      const fullName = `${firstName} ${lastName}`;
-      setNames([...names, fullName]);
-      setName("");
-      setLast("");
-    } else alert(" Faltan campos por llenar ");
-  };
-
-  const HandleFirst = (e) => {
-    setName(e.target.value);
-  };
-
-  const HandleLast = (e) => {
-    setLast(e.target.value);
-  };
+  function onSubmit(data: Koder) {
+    setNames([
+      { firstname: data.firstname, lastname: data.lastname },
+      ...names,
+    ]);
+    reset();
+  }
 
   function onDelete(indexToDelete: number) {
     names.splice(indexToDelete, 1);
     setNames([...names]);
+  }
+
+  function empty() {
+    setNames([]);
   }
   return (
     <>
@@ -33,37 +35,46 @@ export default function App() {
         <h1 className="font-bold">Lista de Koders</h1>
       </header>
       <main className="flex justify-start ps-5">
-        <section className="flex flex-col my-2 gap-3">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex flex-col my-2 gap-3"
+        >
           <input
+            id="text"
             type="text"
             placeholder="Type first name"
-            value={firstName}
-            onChange={HandleFirst}
             className=" bg-slate-700 rounded-md text-white"
+            {...register("firstname", {
+              required: { value: true, message: "El nombre es requerido" },
+              minLength: {
+                value: 3,
+                message: "El nombre debe ser mas largo de 3 palabras ",
+              },
+            })}
           ></input>
           <input
+            id="text"
             type="text"
             placeholder="Type last name"
-            onChange={HandleLast}
-            value={lastName}
             className=" bg-slate-700 rounded-md text-white"
+            {...register("lastname")}
           ></input>
           <button
             type="submit"
-            onClick={AddFullName}
             className="flex flex-col bg-slate-700 text-center font-medium text-white ps-4"
           >
             ➕Agregar Koder➕
           </button>
-        </section>
+        </form>
+        {errors.firstname && <p>{errors.firstname.message}</p>}
+
+        <button className="bg-orange-600" onClick={empty}>
+          Delete All
+        </button>
         <section className="flex flex-row flex-wrap">
           <>
-            {names.map((fullName, index) => (
-              <KoderCard
-                key={index}
-                fullName={fullName}
-                onToDelete={(index) => onDelete(index)}
-              />
+            {names.map((index) => (
+              <KoderCard key={index} onToDelete={(index) => onDelete(index)} />
             ))}
           </>
         </section>
